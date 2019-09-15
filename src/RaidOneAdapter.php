@@ -75,7 +75,6 @@ class RaidOneAdapter extends AbstractAdapter
 	public function writeStream($path, $resource, Config $config)
 	{
 		$trueResults = 0;
-		$position = ftell($resource);
 
 		foreach($this->fileSystems as $fileSystem) {
 			$result = $fileSystem->writeStream($path, $resource);
