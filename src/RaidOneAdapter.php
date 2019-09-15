@@ -201,7 +201,25 @@ class RaidOneAdapter extends AbstractAdapter
 	 */
 	public function copy($path, $newpath)
 	{
-		// TODO: Implement copy() method.
+		$trueResults = 0;
+
+		foreach($this->fileSystems as $fileSystem) {
+			$result = $fileSystem->copy($path, $newpath);
+			if($result)
+				$trueResults++;
+			else
+				break;
+		}
+
+		if($trueResults < count($this->fileSystems)) {
+			foreach($this->fileSystems as $fileSystem) {
+				if($fileSystem->has($newpath))
+					$fileSystem->delete($newpath);
+			}
+
+			return FALSE;
+		} else
+			return TRUE;
 	}
 
 	/**
