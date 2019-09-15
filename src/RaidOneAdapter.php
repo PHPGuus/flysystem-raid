@@ -109,6 +109,9 @@ class RaidOneAdapter extends AbstractAdapter
 	 */
 	public function update($path, $contents, Config $config)
 	{
+		/*
+		 * TODO Actually use $this->read() instead
+		 */
 		$originalContents = $this->fileSystems[0]->read($path);
 		$trueResults = 0;
 
@@ -143,6 +146,9 @@ class RaidOneAdapter extends AbstractAdapter
 	 */
 	public function updateStream($path, $resource, Config $config)
 	{
+		/*
+		 * TODO Actually use $this->read() instead
+		 */
 		$originalContents = $this->fileSystems[0]->read($path);
 		$position = ftell($resource);
 		$trueResults = 0;
@@ -227,7 +233,30 @@ class RaidOneAdapter extends AbstractAdapter
 	 */
 	public function delete($path)
 	{
-		// TODO: Implement delete() method.
+		/*
+		 * TODO Actually use $this->read() instead
+		 */
+		$originalContents = $this->fileSystems[0]->read($path);
+		$trueResults = 0;
+
+		foreach($this->fileSystems as $fileSystem) {
+			$result = $fileSystem->delete($path);
+			if($result)
+				$trueResults++;
+			else
+				break;
+		}
+
+		if($trueResults < count($this->fileSystems)) {
+			foreach($this->fileSystems as $fileSystem) {
+				if(!$fileSystem->has($path)) {
+					$fileSystem->write($path, $originalContents);
+				}
+			}
+
+			return FALSE;
+		} else
+			return TRUE;
 	}
 
 	/**

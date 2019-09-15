@@ -349,6 +349,54 @@ class RaidOneAdapterTest extends TestCase
 
 	#endregion
 
+	#region Public Delete Tests
+
+	/**
+	 * @test
+	 */
+	public function itCanDeleteAFile()
+	{
+		$this->adapter->write('itCanDeleteAFile.txt',
+			'The quick brown fox jumps over the lazy dog.', new Config());
+
+		$result = $this->adapter->delete('itCanDeleteAFile.txt');
+
+		$this->assertTrue($result);
+		$this->assertFileNotExists('./tests/disk1/itCanDeleteAFile.txt');
+		$this->assertFileNotExists('./tests/disk2/itCanDeleteAFile.txt');
+	}
+
+	/**
+	 * @test
+	 */
+	public function itCannotDeleteAFile()
+	{
+		$this->adapter->write('itCanDeleteAFile.txt',
+			'The quick brown fox jumps over the lazy dog.', new Config());
+
+		chmod('./tests/disk2', 0544);
+		$previousErrorReporting = error_reporting(E_ERROR);
+
+		$result = $this->adapter->delete('itCanDeleteAFile.txt');
+
+		$this->assertFalse($result);
+		$this->assertFileExists('./tests/disk1/itCanDeleteAFile.txt');
+		$this->assertFileExists('./tests/disk2/itCanDeleteAFile.txt');
+		$this->assertSame(
+			file_get_contents('./tests/disk1/itCanDeleteAFile.txt'),
+			'The quick brown fox jumps over the lazy dog.'
+		);
+		$this->assertSame(
+			file_get_contents('./tests/disk2/itCanDeleteAFile.txt'),
+			'The quick brown fox jumps over the lazy dog.'
+		);
+
+		error_reporting($previousErrorReporting);
+		chmod('./tests/disk2', 0755);
+	}
+
+	#endregion
+
 	#region Protected Attributes
 
 	/**
