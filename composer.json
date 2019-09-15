@@ -1,0 +1,29 @@
+{
+    "name": "phpguus/flysystem-raid",
+    "description": "A flysystem driver for Redundant Array of Independent Disk configurations.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "PHPGuus",
+            "email": "php.guus@gmail.com"
+        }
+    ],
+	"require": {
+		"php": "^7.3.0",
+        "league/flysystem": "^1.0"
+    },
+	"require-dev": {
+        "phpunit/phpunit": "^8.3"
+    },
+	"autoload": {
+		"psr-4": {
+			"PHPGuus\\FlysystemRaid\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"PHPGuus\\FlysystemRaid\\Tests\\": "tests/"
+		}
+	}
+}
