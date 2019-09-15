@@ -270,7 +270,6 @@ class RaidOneAdapterTest extends TestCase
 			'The quick brown fox jumps over the lazy dog.', new Config());
 
 		$previousErrorReporting = error_reporting(E_NOTICE);
-
 		chmod('./tests/disk2', 0544);
 
 		$result = $this->adapter->rename(
@@ -285,7 +284,68 @@ class RaidOneAdapterTest extends TestCase
 			file_exists('./tests/disk2/newNameItCannotRenameAFile.txt'));
 
 		error_reporting($previousErrorReporting);
+		chmod('./tests/disk2', 0755);
+	}
 
+	#endregion
+
+	#region Public Copy Tests
+
+	/**
+	 * @test
+	 */
+	public function itCanCopyAFile()
+	{
+		$this->adapter->write('itCanCopyAFile.txt',
+			'The quick brown fox jumps over the lazy dog.', new Config());
+
+		$result = $this->adapter->copy('itCanCopyAFile.txt',
+			'itCanCopyAFile.copy.txt');
+
+		$this->assertTrue($result);
+		$this->assertFileExists('./tests/disk1/itCanCopyAFile.txt');
+		$this->assertFileExists('./tests/disk1/itCanCopyAFile.copy.txt');
+		$this->assertFileExists('./tests/disk2/itCanCopyAFile.txt');
+		$this->assertFileExists('./tests/disk2/itCanCopyAFile.copy.txt');
+		$this->assertSame(
+			file_get_contents('./tests/disk1/itCanCopyAFile.txt'),
+			file_get_contents('./tests/disk1/itCanCopyAFile.copy.txt')
+		);
+		$this->assertSame(
+			file_get_contents('./tests/disk2/itCanCopyAFile.txt'),
+			file_get_contents('./tests/disk2/itCanCopyAFile.copy.txt')
+		);
+		$this->assertSame(
+			file_get_contents('./tests/disk1/itCanCopyAFile.txt'),
+			file_get_contents('./tests/disk2/itCanCopyAFile.txt')
+		);
+		$this->assertSame(
+			file_get_contents('./tests/disk1/itCanCopyAFile.txt'),
+			'The quick brown fox jumps over the lazy dog.'
+		);
+	}
+
+	/**
+	 * @test
+	 */
+	public function itCannotCopyAFile()
+	{
+		$this->adapter->write('itCannotCopyAFile.txt',
+			'The quick brown fox jumps over the lazy dog.', new Config());
+
+		$previousErrorReporting = error_reporting(E_NOTICE);
+		chmod('./tests/disk2', 0544);
+
+		$result = $this->adapter->copy('itCannotCopyAFile.txt',
+			'itCannotCopyAFile.copy.txt');
+
+		$this->assertFalse($result);
+		$this->assertFileExists('./tests/disk1/itCannotCopyAFile.txt');
+		$this->assertFileNotExists('./tests/disk1/itCannotCopyAFile.copy.txt');
+		$this->assertFileExists('./tests/disk2/itCannotCopyAFile.txt');
+		$this->assertFileNotExists('./tests/disk2/itCannotCopyAFile.copy.txt');
+
+		error_reporting($previousErrorReporting);
 		chmod('./tests/disk2', 0755);
 	}
 
