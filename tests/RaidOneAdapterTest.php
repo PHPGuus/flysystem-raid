@@ -37,8 +37,8 @@ class RaidOneAdapterTest extends TestCase
 			'The quick brown fox jumps over the lazy dog.', new Config());
 
 //		$this->assertTrue($result);
-		$this->assertTrue(file_exists('./tests/disk1/itCanWriteAFile.txt'));
-		$this->assertTrue(file_exists('./tests/disk2/itCanWriteAFile.txt'));
+		$this->assertFileExists('./tests/disk1/itCanWriteAFile.txt');
+		$this->assertFileExists('./tests/disk2/itCanWriteAFile.txt');
 		$this->assertSame(
 			file_get_contents('./tests/disk1/itCanWriteAFile.txt'),
 			file_get_contents('./tests/disk2/itCanWriteAFile.txt'));
@@ -59,8 +59,8 @@ class RaidOneAdapterTest extends TestCase
 			'The quick brown fox jumps over the lazy dog.', new Config());
 
 		$this->assertFalse($result);
-		$this->assertFalse(file_exists('./tests/disk1/itCanWriteAFile.txt'));
-		$this->assertFalse(file_exists('./tests/disk2/itCanWriteAFile.txt'));
+		$this->assertFileNotExists('./tests/disk1/itCanWriteAFile.txt');
+		$this->assertFileNotExists('./tests/disk2/itCanWriteAFile.txt');
 
 		error_reporting($previousErrorReporting);
 		chmod('./tests/disk2', 0755);
@@ -78,10 +78,10 @@ class RaidOneAdapterTest extends TestCase
 			$handle, new Config());
 
 //		$this->assertTrue($result);
-		$this->assertTrue(file_exists(
-			'./tests/disk1/itCanWriteAFileUsingAStream.txt'));
-		$this->assertTrue(file_exists(
-			'./tests/disk2/itCanWriteAFileUsingAStream.txt'));
+		$this->assertFileExists(
+			'./tests/disk1/itCanWriteAFileUsingAStream.txt');
+		$this->assertFileExists(
+			'./tests/disk2/itCanWriteAFileUsingAStream.txt');
 		$this->assertSame(
 			file_get_contents('./tests/disk1/itCanWriteAFileUsingAStream.txt'),
 			file_get_contents('./tests/disk2/itCanWriteAFileUsingAStream.txt'));
@@ -105,10 +105,10 @@ class RaidOneAdapterTest extends TestCase
 			'itCannotWriteAFileUsingAStream.txt', $handle, new Config());
 
 		$this->assertFalse($result);
-		$this->assertFalse(file_exists(
-			'./tests/disk1/itCannotWriteAFileUsingAStream.txt'));
-		$this->assertFalse(file_exists(
-			'./tests/disk2/itCannotWriteAFileUsingAStream.txt'));
+		$this->assertFileNotExists(
+			'./tests/disk1/itCannotWriteAFileUsingAStream.txt');
+		$this->assertFileNotExists(
+			'./tests/disk2/itCannotWriteAFileUsingAStream.txt');
 
 		error_reporting($previousErrorReporting);
 		chmod('./tests/disk2', 0755);
@@ -130,8 +130,8 @@ class RaidOneAdapterTest extends TestCase
 			'The quick brown dog jumps over the lazy fox.', new Config());
 
 //		$this->assertTrue($result);
-		$this->assertTrue(file_exists('./tests/disk1/itCanUpdateAFile.txt'));
-		$this->assertTrue(file_exists('./tests/disk2/itCanUpdateAFile.txt'));
+		$this->assertFileExists('./tests/disk1/itCanUpdateAFile.txt');
+		$this->assertFileExists('./tests/disk2/itCanUpdateAFile.txt');
 		$this->assertSame(
 			file_get_contents('./tests/disk1/itCanUpdateAFile.txt'),
 			file_get_contents('./tests/disk2/itCanUpdateAFile.txt')
@@ -157,8 +157,8 @@ class RaidOneAdapterTest extends TestCase
 			'The quick brown dog jumps over the lazy fox.', new Config());
 
 //		$this->assertTrue($result);
-		$this->assertTrue(file_exists('./tests/disk1/itCannotUpdateAFile.txt'));
-		$this->assertTrue(file_exists('./tests/disk2/itCannotUpdateAFile.txt'));
+		$this->assertFileExists('./tests/disk1/itCannotUpdateAFile.txt');
+		$this->assertFileExists('./tests/disk2/itCannotUpdateAFile.txt');
 		$this->assertSame(
 			file_get_contents('./tests/disk1/itCannotUpdateAFile.txt'),
 			file_get_contents('./tests/disk2/itCannotUpdateAFile.txt')
@@ -187,10 +187,10 @@ class RaidOneAdapterTest extends TestCase
 			'itCanUpdateAFileUsingAStream.txt', $handle, new Config());
 
 //		$this->assertTrue($result);
-		$this->assertTrue(file_exists(
-			'./tests/disk1/itCanUpdateAFileUsingAStream.txt'));
-		$this->assertTrue(file_exists(
-			'./tests/disk2/itCanUpdateAFileUsingAStream.txt'));
+		$this->assertFileExists(
+			'./tests/disk1/itCanUpdateAFileUsingAStream.txt');
+		$this->assertFileExists(
+			'./tests/disk2/itCanUpdateAFileUsingAStream.txt');
 		$this->assertSame(
 			file_get_contents('./tests/disk1/itCanUpdateAFileUsingAStream.txt'),
 			file_get_contents('./tests/disk2/itCanUpdateAFileUsingAStream.txt')
@@ -219,10 +219,10 @@ class RaidOneAdapterTest extends TestCase
 			'itCannotUpdateAFileUsingAStream.txt', $handle, new Config());
 
 		$this->assertFalse($result);
-		$this->assertTrue(file_exists(
-			'./tests/disk1/itCannotUpdateAFileUsingAStream.txt'));
-		$this->assertTrue(file_exists(
-			'./tests/disk2/itCannotUpdateAFileUsingAStream.txt'));
+		$this->assertFileExists(
+			'./tests/disk1/itCannotUpdateAFileUsingAStream.txt');
+		$this->assertFileExists(
+			'./tests/disk2/itCannotUpdateAFileUsingAStream.txt');
 		$this->assertSame(file_get_contents(
 			'./tests/disk1/itCannotUpdateAFileUsingAStream.txt'),
 			file_get_contents(
@@ -253,12 +253,10 @@ class RaidOneAdapterTest extends TestCase
 			'itCanRenameAFile.txt', 'newNameItCanRenameAFile.txt');
 
 		$this->assertTrue($result);
-		$this->assertTrue(
-			file_exists('./tests/disk1/newNameItCanRenameAFile.txt'));
-		$this->assertFalse(file_exists('./tests/disk1/itCanRenameAFile.txt'));
-		$this->assertTrue(
-			file_exists('./tests/disk2/newNameItCanRenameAFile.txt'));
-		$this->assertFalse(file_exists('./tests/disk2/itCanRenameAFile.txt'));
+		$this->assertFileExists('./tests/disk1/newNameItCanRenameAFile.txt');
+		$this->assertFileNotExists('./tests/disk1/itCanRenameAFile.txt');
+		$this->assertFileExists('./tests/disk2/newNameItCanRenameAFile.txt');
+		$this->assertFileNotExists('./tests/disk2/itCanRenameAFile.txt');
 	}
 
 	/**
@@ -277,12 +275,12 @@ class RaidOneAdapterTest extends TestCase
 			'itCannotRenameAFile.txt', 'newNameItCannotRenameAFile.txt');
 
 		$this->assertFalse($result);
-		$this->assertTrue(file_exists('./tests/disk1/itCannotRenameAFile.txt'));
-		$this->assertFalse(
-			file_exists('./tests/disk1/newNameItCannotRenameAFile.txt'));
-		$this->assertTrue(file_exists('./tests/disk2/itCannotRenameAFile.txt'));
-		$this->assertFalse(
-			file_exists('./tests/disk2/newNameItCannotRenameAFile.txt'));
+		$this->assertFileExists('./tests/disk1/itCannotRenameAFile.txt');
+		$this->assertFileNotExists(
+			'./tests/disk1/newNameItCannotRenameAFile.txt');
+		$this->assertFileExists('./tests/disk2/itCannotRenameAFile.txt');
+		$this->assertFileNotExists(
+			'./tests/disk2/newNameItCannotRenameAFile.txt');
 
 		error_reporting($previousErrorReporting);
 
