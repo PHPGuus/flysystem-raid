@@ -566,6 +566,65 @@ class RaidOneAdapterTest extends TestCase
 
     //endregion
 
+    //region Public Has Tests
+
+    /**
+     * @test
+     */
+    public function itHasAFile()
+    {
+        $this->adapter->write('itHasAFile.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        $result = $this->adapter->has('itHasAFile.txt');
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * @test
+     */
+    public function itHasAFileWhenTheSecondMirrorWasLost()
+    {
+        $this->adapter->write('itHasAFileWhenTheSecondMirrorWasLost.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        unlink('./tests/disk2/itHasAFileWhenTheSecondMirrorWasLost.txt');
+
+        $result = $this->adapter
+            ->has('itHasAFileWhenTheSecondMirrorWasLost.txt');
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * @test
+     */
+    public function itHasAFileWhenTheFirstMirrorWasLost()
+    {
+        $this->adapter->write('itHasAFileWhenTheFirstMirrorWasLost.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        unlink('./tests/disk1/itHasAFileWhenTheFirstMirrorWasLost.txt');
+
+        $result = $this->adapter
+            ->has('itHasAFileWhenTheFirstMirrorWasLost.txt');
+
+        $this->assertTrue($result);
+    }
+
+    /**
+     * @test
+     */
+    public function itDoesNotHaveAFileThatDoesNotExist()
+    {
+        $result = $this->adapter->has('itDoesNotHaveAFileThatDoesNotExist.txt');
+
+        $this->assertFalse($result);
+    }
+
+    //endregion
+
     //region Protected Attributes
 
     /**

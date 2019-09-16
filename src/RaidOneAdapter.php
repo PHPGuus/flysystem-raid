@@ -382,11 +382,22 @@ class RaidOneAdapter extends AbstractAdapter
     }
 
     /**
-     * {@inheritdoc}
+     * Check whether a file exists in a RAID-1 fashion: The first file system
+     * that has the requested file, determines the full answer.
+     *
+     * @param string $path
+     *
+     * @return array|bool|null
      */
     public function has($path)
     {
-        // TODO: Implement has() method.
+        foreach ($this->fileSystems as $fileSystem) {
+            if ($fileSystem->has($path)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
