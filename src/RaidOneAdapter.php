@@ -47,7 +47,7 @@ class RaidOneAdapter extends AbstractAdapter
         foreach ($this->fileSystems as $fileSystem) {
             $result = $fileSystem->write($path, $contents);
             if ($result) {
-                $trueResults++;
+                ++$trueResults;
             } else {
                 break;
             }
@@ -83,7 +83,7 @@ class RaidOneAdapter extends AbstractAdapter
         foreach ($this->fileSystems as $fileSystem) {
             $result = $fileSystem->writeStream($path, $resource);
             if ($result) {
-                $trueResults++;
+                ++$trueResults;
             } else {
                 break;
             }
@@ -124,7 +124,7 @@ class RaidOneAdapter extends AbstractAdapter
         foreach ($this->fileSystems as $fileSystem) {
             $result = $fileSystem->update($path, $contents);
             if ($result) {
-                $trueResults++;
+                ++$trueResults;
             } else {
                 break;
             }
@@ -164,7 +164,7 @@ class RaidOneAdapter extends AbstractAdapter
         foreach ($this->fileSystems as $fileSystem) {
             $result = $fileSystem->updateStream($path, $resource);
             if ($result) {
-                $trueResults++;
+                ++$trueResults;
             } else {
                 break;
             }
@@ -197,7 +197,7 @@ class RaidOneAdapter extends AbstractAdapter
         foreach ($this->fileSystems as $fileSystem) {
             $result = $fileSystem->rename($path, $newpath);
             if ($result) {
-                $trueResults++;
+                ++$trueResults;
             }
         }
 
@@ -224,7 +224,7 @@ class RaidOneAdapter extends AbstractAdapter
         foreach ($this->fileSystems as $fileSystem) {
             $result = $fileSystem->copy($path, $newpath);
             if ($result) {
-                $trueResults++;
+                ++$trueResults;
             } else {
                 break;
             }
@@ -257,7 +257,7 @@ class RaidOneAdapter extends AbstractAdapter
         foreach ($this->fileSystems as $fileSystem) {
             $result = $fileSystem->delete($path);
             if ($result) {
-                $trueResults++;
+                ++$trueResults;
             } else {
                 break;
             }
