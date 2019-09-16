@@ -391,8 +391,8 @@ class RaidOneAdapter extends AbstractAdapter
      */
     public function has($path)
     {
-        foreach($this->fileSystems as $fileSystem) {
-            if($fileSystem->has($path)) {
+        foreach ($this->fileSystems as $fileSystem) {
+            if ($fileSystem->has($path)) {
                 return true;
             }
         }

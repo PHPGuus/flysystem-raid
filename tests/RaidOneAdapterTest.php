@@ -622,6 +622,7 @@ class RaidOneAdapterTest extends TestCase
 
         $this->assertFalse($result);
     }
+
     //endregion
 
     //region Protected Attributes
