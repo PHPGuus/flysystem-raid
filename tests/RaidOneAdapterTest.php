@@ -438,10 +438,9 @@ class RaidOneAdapterTest extends TestCase
      */
     public function itCanDeleteADirectory()
     {
-        $config = new Config();
-        $this->adapter->createDir('itCanDeleteADirectory', $config);
+        $this->adapter->createDir('itCanDeleteADirectory', new Config());
 
-        $result = $this->adapter->deleteDir('itCanDeleteADirectory', $config);
+        $result = $this->adapter->deleteDir('itCanDeleteADirectory');
 
         $this->assertTrue($result);
         $this->assertDirectoryNotExists('./tests/disk1/itCanDeleteADirectory');
