@@ -20,7 +20,7 @@ class RaidOneAdapterTest extends TestCase
     {
         $this->expectException(IncorrectNumberOfFileSystems::class);
         $localAdapter = new RaidOneAdapter([
-            new Filesystem(new Local('.tests/disk1')),
+            new Filesystem(new Local('./tests/disk1')),
         ]);
     }
 
