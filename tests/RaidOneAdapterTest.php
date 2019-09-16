@@ -20,7 +20,7 @@ class RaidOneAdapterTest extends TestCase
     {
         $this->expectException(IncorrectNumberOfFileSystems::class);
         $localAdapter = new RaidOneAdapter([
-            new Filesystem(new Local('.tests/disk1')),
+            new Filesystem(new Local('./tests/disk1')),
         ]);
     }
 
@@ -390,6 +390,78 @@ class RaidOneAdapterTest extends TestCase
             file_get_contents('./tests/disk2/itCanDeleteAFile.txt'),
             'The quick brown fox jumps over the lazy dog.'
         );
+
+        error_reporting($previousErrorReporting);
+        chmod('./tests/disk2', 0755);
+    }
+
+    //endregion
+
+    //region Public Directory Tests
+
+    /**
+     * @test
+     */
+    public function itCanCreateADirectory()
+    {
+        $result = $this->adapter->createDir('itCanCreateADirectory',
+            new Config());
+
+//        $this->assertTrue($result);
+        $this->assertDirectoryExists('./tests/disk1/itCanCreateADirectory');
+        $this->assertDirectoryExists('./tests/disk2/itCanCreateADirectory');
+    }
+
+    /**
+     * @test
+     */
+    public function itCannotCreateADirectory()
+    {
+        chmod('./tests/disk2', 0544);
+        $previousErrorReporting = error_reporting(E_ERROR);
+
+        $result = $this->adapter->createDir('itCannotCreateADirectory',
+            new Config());
+
+        $this->assertFalse($result);
+        $this->assertDirectoryNotExists(
+            './tests/disk1/itCannotCreateADirectory');
+        $this->assertDirectoryNotExists(
+            './tests/disk2/itCannotCreateADirectory');
+
+        error_reporting($previousErrorReporting);
+        chmod('./tests/disk2', 0755);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanDeleteADirectory()
+    {
+        $this->adapter->createDir('itCanDeleteADirectory', new Config());
+
+        $result = $this->adapter->deleteDir('itCanDeleteADirectory');
+
+        $this->assertTrue($result);
+        $this->assertDirectoryNotExists('./tests/disk1/itCanDeleteADirectory');
+        $this->assertDirectoryNotExists('./tests/disk2/itCanDeleteADirectory');
+    }
+
+    /**
+     * @test
+     */
+    public function itCannotDeleteADirectory()
+    {
+        $this->adapter->createDir('itCannotDeleteADirectory', new Config());
+
+        chmod('./tests/disk2', 0544);
+        $previousErrorReporting = error_reporting(E_ERROR);
+
+        $result = $this->adapter->deleteDir('itCannotDeleteADirectory');
+
+        $this->assertFalse($result);
+        $this->assertDirectoryNotExists('./tests/disk1/itCannotDeleteADirectory');
+        $this->assertDirectoryExists('./tests/disk2/itCannotDeleteADirectory');
 
         error_reporting($previousErrorReporting);
         chmod('./tests/disk2', 0755);
