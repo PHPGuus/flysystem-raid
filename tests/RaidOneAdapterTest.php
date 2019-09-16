@@ -410,7 +410,7 @@ class RaidOneAdapterTest extends TestCase
         $result = $this->adapter->getVisibility(
             'itCanGetVisibilityOfAFile.txt');
 
-        $this->assertTrue($result == '0664');
+        $this->assertTrue('0664' == $result);
     }
 
     /**

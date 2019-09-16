@@ -311,10 +311,11 @@ class RaidOneAdapter extends AbstractAdapter
         foreach ($this->fileSystems as $fileSystem) {
             if ($fileSystem->has($path)) {
                 $result = $fileSystem->setVisibility($path, $visibility);
-                if ($result)
+                if ($result) {
                     $trueResults++;
-                else
+                } else {
                     break;
+                }
             }
         }
 
@@ -326,7 +327,7 @@ class RaidOneAdapter extends AbstractAdapter
                 }
             }
 
-            return FALSE;
+            return false;
         }
 
         return $this->getVisibility($path);
@@ -409,12 +410,13 @@ class RaidOneAdapter extends AbstractAdapter
         foreach ($this->fileSystems as $fileSystem) {
             if ($fileSystem->has($path)) {
                 $result = $fileSystem->getVisibility($path);
-                if ($result !== FALSE)
+                if (false !== $result) {
                     return $result;
+                }
             }
         }
 
-        return FALSE;
+        return false;
     }
 
     //endregion
