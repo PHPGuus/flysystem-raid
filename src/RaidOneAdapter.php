@@ -312,7 +312,7 @@ class RaidOneAdapter extends AbstractAdapter
             if ($fileSystem->has($path)) {
                 $result = $fileSystem->setVisibility($path, $visibility);
                 if ($result) {
-                    $trueResults++;
+                    ++$trueResults;
                 } else {
                     break;
                 }
