@@ -293,7 +293,7 @@ class RaidOneAdapter extends AbstractAdapter
         foreach ($this->fileSystems as $fileSystem) {
             $result = $fileSystem->deleteDir($dirname);
             if ($result) {
-                $trueResults++;
+                ++$trueResults;
             }
         }
 
@@ -323,7 +323,7 @@ class RaidOneAdapter extends AbstractAdapter
             if (false === $result) {
                 break;
             } else {
-                $trueResults++;
+                ++$trueResults;
             }
         }
 
