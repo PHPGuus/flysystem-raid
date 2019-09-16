@@ -341,11 +341,44 @@ class RaidOneAdapter extends AbstractAdapter
     }
 
     /**
-     * {@inheritdoc}
+     * Set the visibility for a file in a RAID-1 fashion by setting the
+     * visibility on the $path for each underlying filesystem. Revert if one
+     * has a failure setting the visibility.
+     *
+     * @param string $path
+     * @param string $visibility
+     *
+     * @return array|false file meta data
      */
     public function setVisibility($path, $visibility)
     {
-        // TODO: Implement setVisibility() method.
+        $trueResults = 0;
+
+        $originalVisibility = $this->getVisibility($path);
+
+        foreach ($this->fileSystems as $fileSystem) {
+            if ($fileSystem->has($path)) {
+                $result = $fileSystem->setVisibility($path, $visibility);
+                if ($result) {
+                    ++$trueResults;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        if ($trueResults < count($this->fileSystems)) {
+            foreach ($this->fileSystems as $fileSystem) {
+                if ($fileSystem->has($path)) {
+                    $fileSystem->setVisibility($path,
+                        $originalVisibility['visibility']);
+                }
+            }
+
+            return false;
+        }
+
+        return $this->getVisibility($path);
     }
 
     /**
@@ -413,11 +446,25 @@ class RaidOneAdapter extends AbstractAdapter
     }
 
     /**
-     * {@inheritdoc}
+     * Get the visibility of a file in a RAID-1 fashion: The first filesystem
+     * that returns a non-false result provides the result of this method.
+     *
+     * @param string $path
+     *
+     * @return array|false
      */
     public function getVisibility($path)
     {
-        // TODO: Implement getVisibility() method.
+        foreach ($this->fileSystems as $fileSystem) {
+            if ($fileSystem->has($path)) {
+                $result = $fileSystem->getVisibility($path);
+                if (false !== $result) {
+                    return $result;
+                }
+            }
+        }
+
+        return false;
     }
 
     //endregion

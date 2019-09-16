@@ -412,9 +412,6 @@ class RaidOneAdapterTest extends TestCase
         $this->assertDirectoryExists('./tests/disk2/itCanCreateADirectory');
     }
 
-    /**
-     * @test
-     */
     public function itCannotCreateADirectory()
     {
         chmod('./tests/disk2', 0544);
@@ -462,6 +459,103 @@ class RaidOneAdapterTest extends TestCase
         $this->assertFalse($result);
         $this->assertDirectoryNotExists('./tests/disk1/itCannotDeleteADirectory');
         $this->assertDirectoryExists('./tests/disk2/itCannotDeleteADirectory');
+
+        error_reporting($previousErrorReporting);
+        chmod('./tests/disk2', 0755);
+    }
+
+    //endregion
+
+    //region Public Visibility Tests
+
+    /**
+     * @test
+     */
+    public function itCanGetVisibilityOfAFile()
+    {
+        $this->adapter->write('itCanGetVisibilityOfAFile.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        $result = $this->adapter->getVisibility(
+            'itCanGetVisibilityOfAFile.txt');
+
+        $this->assertTrue('0664' == $result);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanGetVisibilityOfAFileWithOneMirrorReadOnly()
+    {
+        $this->adapter->write(
+            'itCanGetVisibilityOfAFileWithOneMirrorReadOnly.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        chmod('./tests/disk1', 0300);
+        $previousErrorReporting = error_reporting(E_ERROR);
+
+        $result = $this->adapter->getVisibility(
+            'itCanGetVisibilityOfAFileWithOneMirrorReadOnly.txt');
+
+        $this->assertSame($result, '0664');
+
+        error_reporting($previousErrorReporting);
+        chmod('./tests/disk1', 0755);
+    }
+
+    /**
+     * @test
+     */
+    public function itCannotGetVisibilityOfAFile()
+    {
+        $this->adapter->write(
+            'itCannotGetVisibilityOfAFile.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        chmod('./tests/disk1', 0600);
+        chmod('./tests/disk2', 0600);
+        $previousErrorReporting = error_reporting(E_ERROR);
+
+        $result = $this->adapter->getVisibility(
+            'itCannotGetVisibilityOfAFile.txt');
+
+        $this->assertFalse($result);
+
+        error_reporting($previousErrorReporting);
+        chmod('./tests/disk1', 0755);
+        chmod('./tests/disk2', 0755);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanSetVisibilityOfAFile()
+    {
+        $this->adapter->write('itCanSetVisibilityOfAFile.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        $result = $this->adapter->setVisibility('itCanSetVisibilityOfAFile.txt',
+            'private');
+
+        $this->assertIsString($result);
+        $this->assertSame($result, 'private');
+    }
+
+    /**
+     * @test
+     */
+    public function itCannotSetVisibilityOfAFile()
+    {
+        $this->adapter->write('itCannotSetVisibilityOfAFile.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        chmod('./tests/disk2', 0400);
+        $previousErrorReporting = error_reporting(E_ERROR);
+
+        $result = $this->adapter->setVisibility(
+            'itCannotSetVisibilityOfAFile.txt', 'private');
+
+        $this->assertFalse($result);
 
         error_reporting($previousErrorReporting);
         chmod('./tests/disk2', 0755);
