@@ -290,16 +290,18 @@ class RaidOneAdapter extends AbstractAdapter
     {
         $trueResults = 0;
 
-        foreach($this->fileSystems as $fileSystem) {
+        foreach ($this->fileSystems as $fileSystem) {
             $result = $fileSystem->deleteDir($dirname);
-            if($result)
+            if ($result) {
                 $trueResults++;
+            }
         }
 
-        if($trueResults < count($this->fileSystems))
-            return FALSE;
-        else
-            return TRUE;
+        if ($trueResults < count($this->fileSystems)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
@@ -316,22 +318,23 @@ class RaidOneAdapter extends AbstractAdapter
     {
         $trueResults = 0;
 
-        foreach($this->fileSystems as $fileSystem) {
+        foreach ($this->fileSystems as $fileSystem) {
             $result = $fileSystem->createDir($dirname);
-            if($result === FALSE)
+            if (false === $result) {
                 break;
-            else
+            } else {
                 $trueResults++;
+            }
         }
 
-        if($trueResults < count($this->fileSystems)) {
-            foreach($this->fileSystems as $fileSystem) {
-                if($fileSystem->has($dirname)) {
+        if ($trueResults < count($this->fileSystems)) {
+            foreach ($this->fileSystems as $fileSystem) {
+                if ($fileSystem->has($dirname)) {
                     $fileSystem->deleteDir($dirname);
                 }
             }
 
-            return FALSE;
+            return false;
         }
 
         return $this->getMetadata($dirname);
