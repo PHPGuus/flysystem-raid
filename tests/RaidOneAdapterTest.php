@@ -397,6 +397,79 @@ class RaidOneAdapterTest extends TestCase
 
     //endregion
 
+    //region Public Directory Tests
+
+    /**
+     * @test
+     */
+    public function itCanCreateADirectory()
+    {
+        $result = $this->adapter->createDir('itCanCreateADirectory',
+            new Config());
+
+//        $this->assertTrue($result);
+        $this->assertDirectoryExists('./tests/disk1/itCanCreateADirectory');
+        $this->assertDirectoryExists('./tests/disk2/itCanCreateADirectory');
+    }
+
+    /**
+     * @test
+     */
+    public function itCannotCreateADirectory()
+    {
+        chmod('./tests/disk2', 0544);
+        $previousErrorReporting = error_reporting(E_ERROR);
+
+        $result = $this->adapter->createDir('itCannotCreateADirectory',
+            new Config());
+
+        $this->assertFalse($result);
+        $this->assertDirectoryNotExists(
+            './tests/disk1/itCannotCreateADirectory');
+        $this->assertDirectoryNotExists(
+            './tests/disk2/itCannotCreateADirectory');
+
+        error_reporting($previousErrorReporting);
+        chmod('./tests/disk2', 0755);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanDeleteADirectory()
+    {
+        $config = new Config();
+        $this->adapter->createDir('itCanDeleteADirectory', $config);
+
+        $result = $this->adapter->deleteDir('itCanDeleteADirectory', $config);
+
+        $this->assertTrue($result);
+        $this->assertDirectoryNotExists('./tests/disk1/itCanDeleteADirectory');
+        $this->assertDirectoryNotExists('./tests/disk2/itCanDeleteADirectory');
+    }
+
+    /**
+     * @test
+     */
+    public function itCannotDeleteADirectory()
+    {
+        $this->adapter->createDir('itCannotDeleteADirectory', new Config());
+
+        chmod('./tests/disk2', 0544);
+        $previousErrorReporting = error_reporting(E_ERROR);
+
+        $result = $this->adapter->deleteDir('itCannotDeleteADirectory');
+
+        $this->assertFalse($result);
+        $this->assertDirectoryNotExists('./tests/disk1/itCannotDeleteADirectory');
+        $this->assertDirectoryExists('./tests/disk2/itCannotDeleteADirectory');
+
+        error_reporting($previousErrorReporting);
+        chmod('./tests/disk2', 0755);
+    }
+
+    //endregion
+
     //region Protected Attributes
 
     /**

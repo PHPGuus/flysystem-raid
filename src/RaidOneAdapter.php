@@ -277,19 +277,64 @@ class RaidOneAdapter extends AbstractAdapter
     }
 
     /**
-     * {@inheritdoc}
+     * Delete a directory in a RAID-1 fashion. If a deleteDir operation fails
+     * for one of the underlying filesystems, this cannot be repaired magically
+     * as most Flysystem Adapters chose to recursively delete files along the
+     * way.
+     *
+     * @param string $dirname
+     *
+     * @return bool
      */
     public function deleteDir($dirname)
     {
-        // TODO: Implement deleteDir() method.
+        $trueResults = 0;
+
+        foreach($this->fileSystems as $fileSystem) {
+            $result = $fileSystem->deleteDir($dirname);
+            if($result)
+                $trueResults++;
+        }
+
+        if($trueResults < count($this->fileSystems))
+            return FALSE;
+        else
+            return TRUE;
     }
 
     /**
-     * {@inheritdoc}
+     * Create a directory in a RAID-1 fashion: Create the directory for each
+     * underlying filesystem, and if that fails on one of them, revert all
+     * filesystems by deleting the created directory.
+     *
+     * @param string $dirname directory name
+     * @param Config $config
+     *
+     * @return array|false
      */
     public function createDir($dirname, Config $config)
     {
-        // TODO: Implement createDir() method.
+        $trueResults = 0;
+
+        foreach($this->fileSystems as $fileSystem) {
+            $result = $fileSystem->createDir($dirname);
+            if($result === FALSE)
+                break;
+            else
+                $trueResults++;
+        }
+
+        if($trueResults < count($this->fileSystems)) {
+            foreach($this->fileSystems as $fileSystem) {
+                if($fileSystem->has($dirname)) {
+                    $fileSystem->deleteDir($dirname);
+                }
+            }
+
+            return FALSE;
+        }
+
+        return $this->getMetadata($dirname);
     }
 
     /**
