@@ -562,7 +562,7 @@ class RaidOneAdapterTest extends TestCase
     }
 
     //endregion
-  
+
     //region Protected Attributes
 
     /**
