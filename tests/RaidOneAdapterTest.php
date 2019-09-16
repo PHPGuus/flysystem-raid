@@ -412,6 +412,9 @@ class RaidOneAdapterTest extends TestCase
         $this->assertDirectoryExists('./tests/disk2/itCanCreateADirectory');
     }
 
+    /**
+     * @test
+     */
     public function itCannotCreateADirectory()
     {
         chmod('./tests/disk2', 0544);
