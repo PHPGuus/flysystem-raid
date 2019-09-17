@@ -5,16 +5,22 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+### Changed
+
+### Removed
+
+## [1.1.0] - 2019-09-17
+
+### Added
+
 - Full implementation of the `RaidOneAdapter`, including code to `rebuildArray`
 by [@PHPGuus](https://github.com/PHPGuus)
-
+- Scrutinizer configuration
 ### Changed
 
 - Updated test suite to match `RaidOneAdapter` implementation by
 [@PHPGuus](https://github.com/PHPGuus)
-
-### Removed
-
+- Updated README.md with shields (from shields.io)
 ## [1.0.0] - 2019-09-15
 ### Added
 
@@ -26,7 +32,3 @@ by [@PHPGuus](https://github.com/PHPGuus)
   - `updateStream()`
   - `rename()` 
 - Test Suite for the `RaidOneAdapter` by [@PHPGuus](https://github.com/PHPGuus)
-
-### Changed
-
-### Removed
