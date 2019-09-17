@@ -627,7 +627,7 @@ class RaidOneAdapter extends AbstractRaidAdapter
 
     private function createMirror($path): bool
     {
-        $stream = false;
+        $object = false;
 
         foreach ($this->fileSystems as $fileSystem) {
             if ($fileSystem->has($path)) {
