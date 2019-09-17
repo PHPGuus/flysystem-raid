@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPGuus\FlysystemRaid\Exceptions;
+namespace PHPGuus\FlysystemRaid;
 
 use League\Flysystem\Adapter\AbstractAdapter;
 

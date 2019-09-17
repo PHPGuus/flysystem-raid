@@ -1,5 +1,11 @@
 # Flysystem-raid
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/phpguus/flysystem-raid?style=flat-square)](https://packagist.org/packages/phpguus/flysystem-raid)
+[![Build Status](https://img.shields.io/travis/com/phpguus/flysystem-raid/master.svg?style=flat-square)](https://travis-ci.com/phpguus/flysystem-raid)
+[![StyleCI](https://styleci.io/repos/208583235/shield?branch=master)](https://styleci.io/repos/208583235)
+[![Quality Score](https://img.shields.io/scrutinizer/g/spatie/flysystem-dropbox.svg?style=flat-square)](https://scrutinizer-ci.com/g/spatie/flysystem-dropbox)
+[![Total Downloads](https://img.shields.io/packagist/dt/spatie/flysystem-dropbox.svg?style=flat-square)](https://packagist.org/packages/spatie/flysystem-dropbox)
+
 Flysystem-raid provides RAID functionality across multiple flysystem filesystems. 
 
 ## Installation

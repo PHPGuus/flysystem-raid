@@ -3,7 +3,6 @@
 namespace PHPGuus\FlysystemRaid;
 
 use League\Flysystem\Config;
-use PHPGuus\FlysystemRaid\Exceptions\AbstractRaidAdapter;
 use PHPGuus\FlysystemRaid\Exceptions\IncorrectNumberOfFileSystems;
 
 class RaidOneAdapter extends AbstractRaidAdapter
@@ -40,15 +39,16 @@ class RaidOneAdapter extends AbstractRaidAdapter
         $contents = $this->listContents('', true);
         $fileSystemCount = count($this->fileSystems);
 
-        $result = true;
-
         foreach ($contents as $metadata) {
             if ($metadata['mirrors'] < $fileSystemCount) {
-                $result &= $this->createMirror($metadata['path']);
+                $cmResult = $this->createMirror($metadata['path']);
+                if (!$cmResult) {
+                    return false;
+                }
             }
         }
 
-        return $result;
+        return true;
     }
 
     /**
