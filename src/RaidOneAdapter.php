@@ -632,12 +632,13 @@ class RaidOneAdapter extends AbstractRaidAdapter
         foreach ($this->fileSystems as $fileSystem) {
             if ($fileSystem->has($path)) {
                 $object = $this->read($path);
+
                 break;
             }
         }
 
         /* If there is no stream, then all mirrors were lost somehow... */
-        if(!$object) {
+        if (!$object) {
             return false;
         }
 
@@ -660,6 +661,7 @@ class RaidOneAdapter extends AbstractRaidAdapter
      *
      * @param array $a
      * @param array $b
+     *
      * @return array
      */
     private function mergeContentLists(array $a, array $b)
@@ -682,7 +684,8 @@ class RaidOneAdapter extends AbstractRaidAdapter
                     $result[$i]['size'] == $itemB['size']
                 ) {
                     $found = true;
-                    $result[$i]['mirrors']++;
+                    ++$result[$i]['mirrors'];
+
                     break;
                 }
             }

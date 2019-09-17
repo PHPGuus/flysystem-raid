@@ -1085,9 +1085,9 @@ class RaidOneAdapterTest extends TestCase
         $this->assertArrayHasKey('mirrors', $listing[0]);
         $this->assertSame(2, $listing[0]['mirrors']);
         $this->assertSame(
-            file_get_contents('./tests/disk1/itCanRebuildTheArrayAfter' .
+            file_get_contents('./tests/disk1/itCanRebuildTheArrayAfter'.
                 'SecondMirrorIsLost.txt'),
-            file_get_contents('./tests/disk2/itCanRebuildTheArrayAfter' .
+            file_get_contents('./tests/disk2/itCanRebuildTheArrayAfter'.
                 'SecondMirrorIsLost.txt')
         );
     }
@@ -1120,9 +1120,9 @@ class RaidOneAdapterTest extends TestCase
         $this->assertArrayHasKey('mirrors', $listing[0]);
         $this->assertSame(2, $listing[0]['mirrors']);
         $this->assertSame(
-            file_get_contents('./tests/disk1/itCanRebuildTheArrayAfter' .
+            file_get_contents('./tests/disk1/itCanRebuildTheArrayAfter'.
                 'FirstMirrorIsLost.txt'),
-            file_get_contents('./tests/disk2/itCanRebuildTheArrayAfter' .
+            file_get_contents('./tests/disk2/itCanRebuildTheArrayAfter'.
                 'FirstMirrorIsLost.txt')
         );
     }
