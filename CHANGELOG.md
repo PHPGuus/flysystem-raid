@@ -9,6 +9,12 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 
+## [1.1.1] - 2019-09-17
+
+### Changed
+
+- Drop support for PHP 7.1
+
 ## [1.1.0] - 2019-09-17
 
 ### Added
