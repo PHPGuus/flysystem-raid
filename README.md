@@ -1,6 +1,7 @@
 # Flysystem-raid
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/phpguus/flysystem-raid?style=flat-square)](https://packagist.org/packages/phpguus/flysystem-raid)
+[![Latest Version on Github](https://img.shields.io/github/v/tag/phpguus/flysystem-raid?style=flat-square)](https://github.com/phpguus/flysystem-raid)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/phpguus/flysystem-raid?style=flat-square)](https://packagist.org/phpguus/flysystem-raid)
 [![Build Status](https://img.shields.io/travis/com/phpguus/flysystem-raid/master.svg?style=flat-square)](https://travis-ci.com/phpguus/flysystem-raid)
 [![StyleCI](https://styleci.io/repos/208583235/shield?branch=master)](https://styleci.io/repos/208583235)
 [![Quality Score](https://img.shields.io/scrutinizer/quality/g/phpguus/flysystem-raid.svg?style=flat-square)](https://img.shields.io/scrutinizer/quality/g/phpguus/flysystem-raid)
