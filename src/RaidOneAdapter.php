@@ -361,8 +361,6 @@ class RaidOneAdapter extends AbstractAdapter
                 $result = $fileSystem->setVisibility($path, $visibility);
                 if ($result) {
                     ++$trueResults;
-                } else {
-                    break;
                 }
             }
         }
@@ -401,59 +399,176 @@ class RaidOneAdapter extends AbstractAdapter
     }
 
     /**
-     * {@inheritdoc}
+     * Read a file in a RAID-1 fashion: The first filesystem that can return the
+     * contents of the file, determines the return value from this method.
+     *
+     * @param string $path
+     *
+     * @return array|false
      */
     public function read($path)
     {
-        // TODO: Implement read() method.
+        $contents = false;
+
+        foreach ($this->fileSystems as $fileSystem) {
+            if ($fileSystem->has($path)) {
+                $contents = $fileSystem->read($path);
+                if (false !== $contents) {
+                    break;
+                }
+            }
+        }
+
+        if (false !== $contents) {
+            return [
+                'type' => 'file',
+                'path' => $path,
+                'contents' => $contents
+            ];
+        } else {
+            return false;
+        }
     }
 
     /**
-     * {@inheritdoc}
+     * Read a file as a stream in a RAID-1 fashion: The first filesystem that
+     * can return a handle to the stream, determines the return value from
+     * this method.
+     *
+     * @param string $path
+     *
+     * @return array|false
      */
     public function readStream($path)
     {
-        // TODO: Implement readStream() method.
+        $stream = false;
+
+        foreach ($this->fileSystems as $fileSystem) {
+            if ($fileSystem->has($path)) {
+                $stream = $fileSystem->readStream($path);
+                if (false !== $stream) {
+                    break;
+                }
+            }
+        }
+
+        if (false !== $stream) {
+            return [
+                'type' => 'file',
+                'path' => $path,
+                'stream' => $stream
+            ];
+        } else {
+            return false;
+        }
     }
 
     /**
-     * {@inheritdoc}
+     * List contents of a directory in a RAID-1 fashion: The first filesystem
+     * that returns a non-empty array provides the result.
+     *
+     * @param string $directory
+     * @param bool   $recursive
+     *
+     * @return array
      */
     public function listContents($directory = '', $recursive = false)
     {
-        // TODO: Implement listContents() method.
+        $result = [];
+
+        foreach ($this->fileSystems as $fileSystem) {
+            $fsResult = $fileSystem->listContents($directory, $recursive);
+            if (count($fsResult)) {
+                $result = $this->mergeContentLists($result, $fsResult);
+            }
+        }
+
+        return $result;
     }
 
     /**
-     * {@inheritdoc}
+     * Get all the meta data of a file or directory in a RAID-1 fashion: The
+     * first filesystem that has the path and can return metadata on that path,
+     * determines the result of this method.
+     *
+     * @param string $path
+     *
+     * @return array|false
      */
     public function getMetadata($path)
     {
-        // TODO: Implement getMetadata() method.
+        $result = false;
+
+        foreach ($this->fileSystems as $fileSystem) {
+            if ($fileSystem->has($path)) {
+                $result = $fileSystem->getMetaData($path);
+                if (false !== $result) {
+                    break;
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**
-     * {@inheritdoc}
+     * Get the size of a file by calling getMetadata().
+     *
+     * @param string $path
+     *
+     * @return array|false
      */
     public function getSize($path)
     {
-        // TODO: Implement getSize() method.
+        $this->getMetadata($path);
     }
 
     /**
-     * {@inheritdoc}
+     * Get the mime type of a file in a RAID-1 fashion: The first filesystem that
+     * has the path and can return the mime type of that path, determines the
+     * result of this method.
+     *
+     * @param string $path
+     *
+     * @return array|false
      */
     public function getMimetype($path)
     {
-        // TODO: Implement getMimetype() method.
+        $result = false;
+        foreach ($this->fileSystems as $fileSystem) {
+            if ($fileSystem->has($path)) {
+                $result = $fileSystem->getMimetype($path);
+                if (false !== $result) {
+                    break;
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**
-     * {@inheritdoc}
+     * Get the last modified time of a file as a timestamp in a RAID-1 fashion:
+     * The first filesystem that returns a non-false result provides the result
+     * of this method.
+     *
+     * @param string $path
+     *
+     * @return array|false
      */
     public function getTimestamp($path)
     {
-        // TODO: Implement getTimestamp() method.
+        $result = false;
+        foreach ($this->fileSystems as $fileSystem) {
+            if ($fileSystem->has($path)) {
+                $result = $fileSystem->getTimestamp($path);
+                if (false !== $result) {
+                    break;
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -486,6 +601,37 @@ class RaidOneAdapter extends AbstractAdapter
      * @var array
      */
     private $fileSystems;
+
+    //endregion
+
+    //region Private Implementation
+
+    private function mergeContentLists(array $a, array $b)
+    {
+        $result = [];
+        foreach ($a as $itemA) {
+            $result[] = $itemA;
+        }
+
+        foreach ($b as $itemB) {
+            $found = false;
+            foreach ($result as $itemResult) {
+                if(
+                    $itemResult['type'] == $itemB['type'] &&
+                    $itemResult['path'] == $itemB['path'] &&
+                    $itemResult['size'] == $itemB['size']
+                ) {
+                    $found = true;
+                    break;
+                }
+            }
+            if(!$found) {
+                $result[] = $itemB;
+            }
+        }
+
+        return $result;
+    }
 
     //endregion
 }

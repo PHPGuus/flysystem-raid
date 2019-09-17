@@ -625,6 +625,426 @@ class RaidOneAdapterTest extends TestCase
 
     //endregion
 
+    //region Public Read Tests
+
+    /**
+     * @test
+     */
+    public function itCanReadAFile()
+    {
+        $this->adapter->write('itCanReadAFile.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        $result = $this->adapter->read('itCanReadAFile.txt');
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('type', $result);
+        $this->assertArrayHasKey('path', $result);
+        $this->assertArrayHasKey('contents', $result);
+        $this->assertSame('file', $result['type']);
+        $this->assertSame('itCanReadAFile.txt', $result['path']);
+        $this->assertSame('The quick brown fox jumps over the lazy dog.',
+            $result['contents']);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanReadAFileWhenTheSecondMirrorWasLost()
+    {
+        $this->adapter->write('itCanReadAFileWhenTheSecondMirrorWasLost.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        unlink('./tests/disk2/itCanReadAFileWhenTheSecondMirrorWasLost.txt');
+
+        $result = $this->adapter
+            ->read('itCanReadAFileWhenTheSecondMirrorWasLost.txt');
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('type', $result);
+        $this->assertArrayHasKey('path', $result);
+        $this->assertArrayHasKey('contents', $result);
+        $this->assertSame('file', $result['type']);
+        $this->assertSame('itCanReadAFileWhenTheSecondMirrorWasLost.txt',
+            $result['path']);
+        $this->assertSame('The quick brown fox jumps over the lazy dog.',
+            $result['contents']);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanReadAFileWhenTheFirstMirrorWasLost()
+    {
+        $this->adapter->write('itCanReadAFileWhenTheFirstMirrorWasLost.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        unlink('./tests/disk1/itCanReadAFileWhenTheFirstMirrorWasLost.txt');
+
+        $result = $this->adapter
+            ->read('itCanReadAFileWhenTheFirstMirrorWasLost.txt');
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('type', $result);
+        $this->assertArrayHasKey('path', $result);
+        $this->assertArrayHasKey('contents', $result);
+        $this->assertSame('file', $result['type']);
+        $this->assertSame('itCanReadAFileWhenTheFirstMirrorWasLost.txt',
+            $result['path']);
+        $this->assertSame('The quick brown fox jumps over the lazy dog.',
+            $result['contents']);
+    }
+
+    /**
+     * @test
+     */
+    public function itCannotReadANonExistentFile()
+    {
+        $result = $this->adapter->read('itCannotReadANonExistentFile.txt');
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanReadAFileAsAStream()
+    {
+        $this->adapter->write('itCanReadAFileAsAStream.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        $result = $this->adapter->readStream('itCanReadAFileAsAStream.txt');
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('type', $result);
+        $this->assertArrayHasKey('path', $result);
+        $this->assertArrayHasKey('stream', $result);
+        $this->assertSame('file', $result['type']);
+        $this->assertSame('itCanReadAFileAsAStream.txt', $result['path']);
+        $contents = fread($result['stream'], 8192);
+        $this->assertSame('The quick brown fox jumps over the lazy dog.',
+            $contents);
+        fclose($result['stream']);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanReadAFileAsAStreamWhenTheSecondMirrorWasLost()
+    {
+        $this->adapter
+            ->write('itCanReadAFileAsAStreamWhenTheSecondMirrorWasLost.txt',
+                'The quick brown fox jumps over the lazy dog.', new Config());
+
+        unlink('./tests/disk2/' .
+            'itCanReadAFileAsAStreamWhenTheSecondMirrorWasLost.txt');
+
+        $result = $this->adapter
+            ->readStream('itCanReadAFileAsAStreamWhenTheSecondMirrorWasLost' .
+                '.txt');
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('type', $result);
+        $this->assertArrayHasKey('path', $result);
+        $this->assertArrayHasKey('stream', $result);
+        $this->assertSame('file', $result['type']);
+        $this->assertSame('itCanReadAFileAsAStreamWhenTheSecondMirrorWasLost' .
+            '.txt', $result['path']);
+        $contents = fread($result['stream'], 8192);
+        $this->assertSame('The quick brown fox jumps over the lazy dog.',
+            $contents);
+        fclose($result['stream']);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanReadAFileAsAStreamWhenTheFirstMirrorWasLost()
+    {
+        $this->adapter
+            ->write('itCanReadAFileAsAStreamWhenTheFirstMirrorWasLost.txt',
+                'The quick brown fox jumps over the lazy dog.', new Config());
+
+        unlink('./tests/disk1/itCanReadAFileAsAStreamWhenTheFirstMirrorWas' .
+            'Lost.txt');
+
+        $result = $this->adapter
+            ->readStream('itCanReadAFileAsAStreamWhenTheFirstMirrorWasLost' .
+                '.txt');
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('type', $result);
+        $this->assertArrayHasKey('path', $result);
+        $this->assertArrayHasKey('stream', $result);
+        $this->assertSame('file', $result['type']);
+        $this->assertSame('itCanReadAFileAsAStreamWhenTheFirstMirrorWasLost' .
+            '.txt', $result['path']);
+        $contents = fread($result['stream'], 8192);
+        $this->assertSame('The quick brown fox jumps over the lazy dog.',
+            $contents);
+        fclose($result['stream']);
+    }
+
+    /**
+     * @test
+     */
+    public function itCannotReadANonExistentFileAsAStream()
+    {
+        $result = $this->adapter
+            ->readStream('itCannotReadANonExistentFileAsAStream.txt');
+
+        $this->assertFalse($result);
+    }
+
+    //endregion
+
+    //region Public Status Tests
+
+    /**
+     * @test
+     */
+    public function itCanListContents()
+    {
+        $this->adapter->write('itCanListContents.1.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+        $this->adapter->write('itCanListContents.2.txt',
+            'The quick brown dog jumps over the lazy fox.', new Config());
+
+        $result = $this->adapter->listContents();
+
+        $this->assertIsArray($result);
+        $this->assertCount(2, $result);
+
+        $this->assertArrayHasKey('type', $result[0]);
+        $this->assertArrayHasKey('path', $result[0]);
+        $this->assertArrayHasKey('size', $result[0]);
+
+        $this->assertArrayHasKey('type', $result[1]);
+        $this->assertArrayHasKey('path', $result[1]);
+        $this->assertArrayHasKey('size', $result[1]);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanListContentsWhenAMirrorLostAFile()
+    {
+        $this->adapter->write('itCanListContentsWhenAMirrorLostAFile.1.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+        $this->adapter->write('itCanListContentsWhenAMirrorLostAFile.2.txt',
+            'The quick brown dog jumps over the lazy fox.', new Config());
+
+        unlink('./tests/disk1/itCanListContentsWhenAMirrorLostAFile.1.txt');
+        unlink('./tests/disk2/itCanListContentsWhenAMirrorLostAFile.2.txt');
+
+        $result = $this->adapter->listContents();
+
+        $this->assertIsArray($result);
+        $this->assertCount(2, $result);
+
+        $this->assertArrayHasKey('type', $result[0]);
+        $this->assertArrayHasKey('path', $result[0]);
+        $this->assertArrayHasKey('size', $result[0]);
+
+        $this->assertArrayHasKey('type', $result[1]);
+        $this->assertArrayHasKey('path', $result[1]);
+        $this->assertArrayHasKey('size', $result[1]);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanGetMetaData()
+    {
+        $this->adapter->write('itCanGetMetaData.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        $result = $this->adapter->getMetadata('itCanGetMetaData.txt');
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('type', $result);
+        $this->assertArrayHasKey('path', $result);
+        $this->assertArrayHasKey('size', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanGetMetaDataWhenTheSecondMirrorIsLost()
+    {
+        $this->adapter->write('itCanGetMetaDataWhenTheSecondMirrorIsLost.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        unlink('./tests/disk2/itCanGetMetaDataWhenTheSecondMirrorIsLost.txt');
+
+        $result = $this->adapter
+            ->getMetadata('itCanGetMetaDataWhenTheSecondMirrorIsLost.txt');
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('type', $result);
+        $this->assertArrayHasKey('path', $result);
+        $this->assertArrayHasKey('size', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanGetMetaDataWhenTheFirstMirrorIsLost()
+    {
+        $this->adapter->write('itCanGetMetaDataWhenTheFirstMirrorIsLost.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        unlink('./tests/disk1/itCanGetMetaDataWhenTheFirstMirrorIsLost.txt');
+
+        $result = $this->adapter
+            ->getMetadata('itCanGetMetaDataWhenTheFirstMirrorIsLost.txt');
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('type', $result);
+        $this->assertArrayHasKey('path', $result);
+        $this->assertArrayHasKey('size', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanGetSize()
+    {
+        $this->adapter->write('itCanGetSize.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        $result = $this->adapter->getMetadata('itCanGetSize.txt');
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('size', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanGetSizeWhenTheSecondMirrorIsLost()
+    {
+        $this->adapter->write('itCanGetSizeWhenTheSecondMirrorIsLost.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        unlink('./tests/disk2/itCanGetSizeWhenTheSecondMirrorIsLost.txt');
+
+        $result = $this->adapter
+            ->getMetadata('itCanGetSizeWhenTheSecondMirrorIsLost.txt');
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('size', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanGetSizeWhenTheFirstMirrorIsLost()
+    {
+        $this->adapter->write('itCanGetSizeWhenTheFirstMirrorIsLost.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        unlink('./tests/disk1/itCanGetSizeWhenTheFirstMirrorIsLost.txt');
+
+        $result = $this->adapter
+            ->getMetadata('itCanGetSizeWhenTheFirstMirrorIsLost.txt');
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('size', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanGetMimeType()
+    {
+        $this->adapter->write('itCanGetMimeType.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        $result = $this->adapter->getMimetype('itCanGetMimeType.txt');
+
+        $this->assertSame('text/plain', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanGetMimeTypeWhenTheSecondMirrorWasLost()
+    {
+        $this->adapter->write('itCanGetMimeTypeWhenTheSecondMirrorWasLost.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        unlink('./tests/disk2/itCanGetMimeTypeWhenTheSecondMirrorWasLost.txt');
+
+        $result = $this->adapter
+            ->getMimetype('itCanGetMimeTypeWhenTheSecondMirrorWasLost.txt');
+
+        $this->assertSame('text/plain', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanGetMimeTypeWhenTheFirstMirrorWasLost()
+    {
+        $this->adapter->write('itCanGetMimeTypeWhenTheFirstMirrorWasLost.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        unlink('./tests/disk1/itCanGetMimeTypeWhenTheFirstMirrorWasLost.txt');
+
+        $result = $this->adapter
+            ->getMimetype('itCanGetMimeTypeWhenTheFirstMirrorWasLost.txt');
+
+        $this->assertSame('text/plain', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanGetTimeStamp()
+    {
+        $this->adapter->write('itCanGetTimeStamp.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        $result = $this->adapter->getTimestamp('itCanGetTimeStamp.txt');
+
+        $this->assertIsInt($result);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanGetTimestampWhenTheSecondMirrorWasLost()
+    {
+        $this->adapter->write('itCanGetTimestampWhenTheSecondMirrorWasLost.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        unlink('./tests/disk2/itCanGetTimestampWhenTheSecondMirrorWasLost.txt');
+
+        $result = $this->adapter
+            ->getTimestamp('itCanGetTimestampWhenTheSecondMirrorWasLost.txt');
+
+        $this->assertIsInt($result);
+    }
+
+    /**
+     * @test
+     */
+    public function itCanGetTimestampWhenTheFirstMirrorWasLost()
+    {
+        $this->adapter->write('itCanGetTimestampWhenTheFirstMirrorWasLost.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        unlink('./tests/disk1/itCanGetTimestampWhenTheFirstMirrorWasLost.txt');
+
+        $result = $this->adapter
+            ->getTimestamp('itCanGetTimestampWhenTheFirstMirrorWasLost.txt');
+
+        $this->assertIsInt($result);
+    }
+
+    //endregion
+
     //region Protected Attributes
 
     /**
