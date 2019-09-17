@@ -818,10 +818,14 @@ class RaidOneAdapterTest extends TestCase
         $this->assertArrayHasKey('type', $result[0]);
         $this->assertArrayHasKey('path', $result[0]);
         $this->assertArrayHasKey('size', $result[0]);
+        $this->assertArrayHasKey('mirrors', $result[0]);
+        $this->assertSame(2, $result[0]['mirrors']);
 
         $this->assertArrayHasKey('type', $result[1]);
         $this->assertArrayHasKey('path', $result[1]);
         $this->assertArrayHasKey('size', $result[1]);
+        $this->assertArrayHasKey('mirrors', $result[1]);
+        $this->assertSame(2, $result[1]['mirrors']);
     }
 
     /**
@@ -865,6 +869,8 @@ class RaidOneAdapterTest extends TestCase
         $this->assertArrayHasKey('type', $result);
         $this->assertArrayHasKey('path', $result);
         $this->assertArrayHasKey('size', $result);
+        $this->assertArrayHasKey('mirrors', $result);
+        $this->assertSame(2, $result['mirrors']);
     }
 
     /**
@@ -884,6 +890,8 @@ class RaidOneAdapterTest extends TestCase
         $this->assertArrayHasKey('type', $result);
         $this->assertArrayHasKey('path', $result);
         $this->assertArrayHasKey('size', $result);
+        $this->assertArrayHasKey('mirrors', $result);
+        $this->assertSame(1, $result['mirrors']);
     }
 
     /**
@@ -903,6 +911,8 @@ class RaidOneAdapterTest extends TestCase
         $this->assertArrayHasKey('type', $result);
         $this->assertArrayHasKey('path', $result);
         $this->assertArrayHasKey('size', $result);
+        $this->assertArrayHasKey('mirrors', $result);
+        $this->assertSame(1, $result['mirrors']);
     }
 
     /**
@@ -1041,6 +1051,80 @@ class RaidOneAdapterTest extends TestCase
             ->getTimestamp('itCanGetTimestampWhenTheFirstMirrorWasLost.txt');
 
         $this->assertIsInt($result);
+    }
+
+    //endregion
+
+    //region Public Rebuild Tests
+
+    /**
+     * @test
+     */
+    public function itCanRebuildTheArrayAfterSecondMirrorIsLost()
+    {
+        $this->adapter->write('itCanRebuildTheArrayAfterSecondMirrorIsLost.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        $listing = $this->adapter->listContents();
+        $this->assertCount(1, $listing);
+        $this->assertArrayHasKey('mirrors', $listing[0]);
+        $this->assertSame(2, $listing[0]['mirrors']);
+
+        unlink('./tests/disk2/itCanRebuildTheArrayAfterSecondMirrorIsLost.txt');
+
+        $listing = $this->adapter->listContents();
+        $this->assertCount(1, $listing);
+        $this->assertArrayHasKey('mirrors', $listing[0]);
+        $this->assertSame(1, $listing[0]['mirrors']);
+
+        $rebuildResult = $this->adapter->rebuildArray();
+
+        $this->assertTrue($rebuildResult);
+        $listing = $this->adapter->listContents();
+        $this->assertCount(1, $listing);
+        $this->assertArrayHasKey('mirrors', $listing[0]);
+        $this->assertSame(2, $listing[0]['mirrors']);
+        $this->assertSame(
+            file_get_contents('./tests/disk1/itCanRebuildTheArrayAfter' .
+                'SecondMirrorIsLost.txt'),
+            file_get_contents('./tests/disk2/itCanRebuildTheArrayAfter' .
+                'SecondMirrorIsLost.txt')
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function itCanRebuildTheArrayAfterFirstMirrorIsLost()
+    {
+        $this->adapter->write('itCanRebuildTheArrayAfterFirstMirrorIsLost.txt',
+            'The quick brown fox jumps over the lazy dog.', new Config());
+
+        $listing = $this->adapter->listContents();
+        $this->assertCount(1, $listing);
+        $this->assertArrayHasKey('mirrors', $listing[0]);
+        $this->assertSame(2, $listing[0]['mirrors']);
+
+        unlink('./tests/disk1/itCanRebuildTheArrayAfterFirstMirrorIsLost.txt');
+
+        $listing = $this->adapter->listContents();
+        $this->assertCount(1, $listing);
+        $this->assertArrayHasKey('mirrors', $listing[0]);
+        $this->assertSame(1, $listing[0]['mirrors']);
+
+        $rebuildResult = $this->adapter->rebuildArray();
+
+        $this->assertTrue($rebuildResult);
+        $listing = $this->adapter->listContents();
+        $this->assertCount(1, $listing);
+        $this->assertArrayHasKey('mirrors', $listing[0]);
+        $this->assertSame(2, $listing[0]['mirrors']);
+        $this->assertSame(
+            file_get_contents('./tests/disk1/itCanRebuildTheArrayAfter' .
+                'FirstMirrorIsLost.txt'),
+            file_get_contents('./tests/disk2/itCanRebuildTheArrayAfter' .
+                'FirstMirrorIsLost.txt')
+        );
     }
 
     //endregion

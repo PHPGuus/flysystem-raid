@@ -2,11 +2,11 @@
 
 namespace PHPGuus\FlysystemRaid;
 
-use League\Flysystem\Adapter\AbstractAdapter;
 use League\Flysystem\Config;
+use PHPGuus\FlysystemRaid\Exceptions\AbstractRaidAdapter;
 use PHPGuus\FlysystemRaid\Exceptions\IncorrectNumberOfFileSystems;
 
-class RaidOneAdapter extends AbstractAdapter
+class RaidOneAdapter extends AbstractRaidAdapter
 {
     //region Public Construction
 
@@ -29,6 +29,27 @@ class RaidOneAdapter extends AbstractAdapter
     //endregion
 
     //region Public Access
+
+    /**
+     * Rebuild the array so that all configured Filesystems have the same data.
+     *
+     * @return bool
+     */
+    public function rebuildArray(): bool
+    {
+        $contents = $this->listContents('', true);
+        $fileSystemCount = count($this->fileSystems);
+
+        $result = true;
+
+        foreach ($contents as $metadata) {
+            if ($metadata['mirrors'] < $fileSystemCount) {
+                $result &= $this->createMirror($metadata['path']);
+            }
+        }
+
+        return $result;
+    }
 
     /**
      * Write a new file in a RAID-1 fashion. If the file is not written to at
@@ -115,10 +136,7 @@ class RaidOneAdapter extends AbstractAdapter
      */
     public function update($path, $contents, Config $config)
     {
-        /*
-         * TODO Actually use $this->read() instead
-         */
-        $originalContents = $this->fileSystems[0]->read($path);
+        $originalContents = $this->read($path);
         $trueResults = 0;
 
         foreach ($this->fileSystems as $fileSystem) {
@@ -132,7 +150,7 @@ class RaidOneAdapter extends AbstractAdapter
 
         if ($trueResults < count($this->fileSystems)) {
             foreach ($this->fileSystems as $fileSystem) {
-                $fileSystem->update($path, $originalContents);
+                $fileSystem->update($path, $originalContents['contents']);
             }
 
             return false;
@@ -154,10 +172,7 @@ class RaidOneAdapter extends AbstractAdapter
      */
     public function updateStream($path, $resource, Config $config)
     {
-        /*
-         * TODO Actually use $this->read() instead
-         */
-        $originalContents = $this->fileSystems[0]->read($path);
+        $originalContents = $this->read($path);
         $position = ftell($resource);
         $trueResults = 0;
 
@@ -173,7 +188,7 @@ class RaidOneAdapter extends AbstractAdapter
 
         if ($trueResults < count($this->fileSystems)) {
             foreach ($this->fileSystems as $fileSystem) {
-                $fileSystem->update($path, $originalContents);
+                $fileSystem->update($path, $originalContents['contents']);
             }
 
             return false;
@@ -248,10 +263,7 @@ class RaidOneAdapter extends AbstractAdapter
      */
     public function delete($path)
     {
-        /*
-         * TODO Actually use $this->read() instead
-         */
-        $originalContents = $this->fileSystems[0]->read($path);
+        $originalContents = $this->read($path);
         $trueResults = 0;
 
         foreach ($this->fileSystems as $fileSystem) {
@@ -266,7 +278,7 @@ class RaidOneAdapter extends AbstractAdapter
         if ($trueResults < count($this->fileSystems)) {
             foreach ($this->fileSystems as $fileSystem) {
                 if (!$fileSystem->has($path)) {
-                    $fileSystem->write($path, $originalContents);
+                    $fileSystem->write($path, $originalContents['contents']);
                 }
             }
 
@@ -502,9 +514,16 @@ class RaidOneAdapter extends AbstractAdapter
         foreach ($this->fileSystems as $fileSystem) {
             if ($fileSystem->has($path)) {
                 $result = $fileSystem->getMetaData($path);
+                $result['mirrors'] = 0;
                 if (false !== $result) {
                     break;
                 }
+            }
+        }
+
+        foreach ($this->fileSystems as $fileSystem) {
+            if ($fileSystem->has($path)) {
+                ++$result['mirrors'];
             }
         }
 
@@ -606,27 +625,69 @@ class RaidOneAdapter extends AbstractAdapter
 
     //region Private Implementation
 
+    private function createMirror($path): bool
+    {
+        $stream = false;
+
+        foreach ($this->fileSystems as $fileSystem) {
+            if ($fileSystem->has($path)) {
+                $object = $this->read($path);
+                break;
+            }
+        }
+
+        /* If there is no stream, then all mirrors were lost somehow... */
+        if(!$object) {
+            return false;
+        }
+
+        $contents = $object['contents'];
+        foreach ($this->fileSystems as $fileSystem) {
+            if (!$fileSystem->has($path)) {
+                $result = $fileSystem->write($path, $contents, []);
+                if (false === $result) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Merge the contents of two listings and make sure to add a count of the
+     * mirrors.
+     *
+     * @param array $a
+     * @param array $b
+     * @return array
+     */
     private function mergeContentLists(array $a, array $b)
     {
         $result = [];
-        foreach ($a as $itemA) {
+        $countA = count($a);
+        for ($i = 0; $i < $countA; ++$i) {
+            $itemA = $a[$i];
+            $itemA['mirrors'] = 1;
             $result[] = $itemA;
         }
 
         foreach ($b as $itemB) {
             $found = false;
-            foreach ($result as $itemResult) {
+            $countResult = count($result);
+            for ($i = 0; $i < $countResult; ++$i) {
                 if (
-                    $itemResult['type'] == $itemB['type'] &&
-                    $itemResult['path'] == $itemB['path'] &&
-                    $itemResult['size'] == $itemB['size']
+                    $result[$i]['type'] == $itemB['type'] &&
+                    $result[$i]['path'] == $itemB['path'] &&
+                    $result[$i]['size'] == $itemB['size']
                 ) {
                     $found = true;
-
+                    $result[$i]['mirrors']++;
                     break;
                 }
             }
             if (!$found) {
+                $itemB['mirrors'] = 1;
                 $result[] = $itemB;
             }
         }
