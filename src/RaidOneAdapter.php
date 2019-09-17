@@ -423,7 +423,7 @@ class RaidOneAdapter extends AbstractAdapter
             return [
                 'type' => 'file',
                 'path' => $path,
-                'contents' => $contents
+                'contents' => $contents,
             ];
         } else {
             return false;
@@ -456,7 +456,7 @@ class RaidOneAdapter extends AbstractAdapter
             return [
                 'type' => 'file',
                 'path' => $path,
-                'stream' => $stream
+                'stream' => $stream,
             ];
         } else {
             return false;
@@ -616,16 +616,17 @@ class RaidOneAdapter extends AbstractAdapter
         foreach ($b as $itemB) {
             $found = false;
             foreach ($result as $itemResult) {
-                if(
+                if (
                     $itemResult['type'] == $itemB['type'] &&
                     $itemResult['path'] == $itemB['path'] &&
                     $itemResult['size'] == $itemB['size']
                 ) {
                     $found = true;
+
                     break;
                 }
             }
-            if(!$found) {
+            if (!$found) {
                 $result[] = $itemB;
             }
         }

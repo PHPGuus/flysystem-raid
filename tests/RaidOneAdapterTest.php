@@ -736,11 +736,11 @@ class RaidOneAdapterTest extends TestCase
             ->write('itCanReadAFileAsAStreamWhenTheSecondMirrorWasLost.txt',
                 'The quick brown fox jumps over the lazy dog.', new Config());
 
-        unlink('./tests/disk2/' .
+        unlink('./tests/disk2/'.
             'itCanReadAFileAsAStreamWhenTheSecondMirrorWasLost.txt');
 
         $result = $this->adapter
-            ->readStream('itCanReadAFileAsAStreamWhenTheSecondMirrorWasLost' .
+            ->readStream('itCanReadAFileAsAStreamWhenTheSecondMirrorWasLost'.
                 '.txt');
 
         $this->assertIsArray($result);
@@ -748,7 +748,7 @@ class RaidOneAdapterTest extends TestCase
         $this->assertArrayHasKey('path', $result);
         $this->assertArrayHasKey('stream', $result);
         $this->assertSame('file', $result['type']);
-        $this->assertSame('itCanReadAFileAsAStreamWhenTheSecondMirrorWasLost' .
+        $this->assertSame('itCanReadAFileAsAStreamWhenTheSecondMirrorWasLost'.
             '.txt', $result['path']);
         $contents = fread($result['stream'], 8192);
         $this->assertSame('The quick brown fox jumps over the lazy dog.',
@@ -765,11 +765,11 @@ class RaidOneAdapterTest extends TestCase
             ->write('itCanReadAFileAsAStreamWhenTheFirstMirrorWasLost.txt',
                 'The quick brown fox jumps over the lazy dog.', new Config());
 
-        unlink('./tests/disk1/itCanReadAFileAsAStreamWhenTheFirstMirrorWas' .
+        unlink('./tests/disk1/itCanReadAFileAsAStreamWhenTheFirstMirrorWas'.
             'Lost.txt');
 
         $result = $this->adapter
-            ->readStream('itCanReadAFileAsAStreamWhenTheFirstMirrorWasLost' .
+            ->readStream('itCanReadAFileAsAStreamWhenTheFirstMirrorWasLost'.
                 '.txt');
 
         $this->assertIsArray($result);
@@ -777,7 +777,7 @@ class RaidOneAdapterTest extends TestCase
         $this->assertArrayHasKey('path', $result);
         $this->assertArrayHasKey('stream', $result);
         $this->assertSame('file', $result['type']);
-        $this->assertSame('itCanReadAFileAsAStreamWhenTheFirstMirrorWasLost' .
+        $this->assertSame('itCanReadAFileAsAStreamWhenTheFirstMirrorWasLost'.
             '.txt', $result['path']);
         $contents = fread($result['stream'], 8192);
         $this->assertSame('The quick brown fox jumps over the lazy dog.',
